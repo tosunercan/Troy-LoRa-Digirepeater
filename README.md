@@ -45,6 +45,10 @@ ESP32 + SX127x tabanlı **LoRa APRS fill-in digipeater**. 433.775 MHz'de dinler,
 
 Farklı bir kart kullanıyorsanız `src/main.cpp` içindeki pin `#define` satırlarını değiştirmeniz yeterlidir.
 
+### Bağlantı şeması
+
+![ESP32 - LoRa Ra-01 bağlantı şeması](Schematic_ESP32-LORA-RA-01_2026-11-03.png)
+
 > **Uyarı:** Modülü **anten takılı değilken asla yayın yaptırmayın**. İlk denemelerde gücü düşük (örn. 15 dBm) tutun.
 
 ## Derleme ve yükleme
