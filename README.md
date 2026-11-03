@@ -76,7 +76,7 @@ OTA'nın çalışması için `partitions.csv` kullanılır: iki adet ~1.94 MB uy
 6. İşiniz bitince WiFi'yi tekrar 3 sn basılı tutarak kapatın.
 
 ### WEB Arayüz Görüntüleri
-![ESP32 - WEB Arayüz Görüntüleri](01_Kullanıcı.png)
+![ESP32 - WEB Arayüz Görüntüleri](01_kullanıcı.png)
 ![ESP32 - WEB Arayüz Görüntüleri](02_LoRa.png)
 ![ESP32 - WEB Arayüz Görüntüleri](03_LOG.png)
 ![ESP32 - WEB Arayüz Görüntüleri](04_OTA.png)
