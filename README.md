@@ -48,6 +48,7 @@ Farklı bir kart kullanıyorsanız `src/main.cpp` içindeki pin `#define` satır
 ### Bağlantı şeması
 
 ![ESP32 - LoRa Ra-01 bağlantı şeması](Schematic_ESP32-LORA-RA-01_2026-11-03.png)
+![ESP32 - LoRa Ra-01 3D PCB](TROY_LoRa_APRS.png)
 
 > **Uyarı:** Modülü **anten takılı değilken asla yayın yaptırmayın**. İlk denemelerde gücü düşük (örn. 15 dBm) tutun.
 
