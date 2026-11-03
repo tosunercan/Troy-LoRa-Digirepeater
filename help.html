@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TROY LoRa DigiRepeater — Yardım ve Kod Kılavuzu (v1.0.2)</title>
+<style>
+:root{
+  --bg:#f6f7f9;--panel:#fff;--text:#1d2330;--muted:#5b6475;--line:#dfe3ea;
+  --accent:#0b6bcb;--accent-soft:#e6f0fb;--ok:#18794e;--warn:#9a6700;--bad:#c62828;
+  --code-bg:#f0f2f6;--log-bg:#1e1e1e;--log-text:#e0e0e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141b;--panel:#171c26;--text:#e3e7ee;--muted:#9aa4b5;--line:#2a3140;
+    --accent:#5aa9ff;--accent-soft:#1a2a40;--ok:#4cc38a;--warn:#e3b341;--bad:#ff6b6b;
+    --code-bg:#1f2633;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141b;--panel:#171c26;--text:#e3e7ee;--muted:#9aa4b5;--line:#2a3140;
+  --accent:#5aa9ff;--accent-soft:#1a2a40;--ok:#4cc38a;--warn:#e3b341;--bad:#ff6b6b;
+  --code-bg:#1f2633;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.65 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+.layout{display:flex;max-width:1200px;margin:0 auto}
+nav{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;width:270px;flex:none;
+  padding:20px 14px;border-right:1px solid var(--line);background:var(--panel);font-size:14px}
+nav h2{font-size:15px;margin:0 0 4px}
+nav .ver{color:var(--muted);font-size:12px;margin-bottom:12px}
+nav a{display:block;padding:4px 8px;border-radius:6px;color:var(--text);text-decoration:none}
+nav a:hover{background:var(--accent-soft)}
+nav a.sub{padding-left:22px;color:var(--muted);font-size:13px}
+nav .grp{margin:12px 8px 2px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+main{flex:1;min-width:0;padding:28px 32px 80px}
+h1{font-size:28px;margin:0 0 6px}
+h2{font-size:22px;margin:44px 0 10px;padding-top:10px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:28px 0 6px}
+p,li{max-width:78ch}
+.lead{color:var(--muted);font-size:17px}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font:13.5px/1.4 ui-monospace,Consolas,monospace}
+pre{background:var(--code-bg);padding:12px 14px;border-radius:8px;overflow-x:auto;
+  font:13px/1.5 ui-monospace,Consolas,monospace;border:1px solid var(--line)}
+pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:14.5px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft)}
+.box{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.box.warn{border-color:var(--warn)}
+.box.bad{border-color:var(--bad)}
+.box.ok{border-color:var(--ok)}
+.box b:first-child{display:block;margin-bottom:2px}
+.tag{display:inline-block;font:12px ui-monospace,Consolas,monospace;padding:1px 7px;border-radius:10px;color:#fff}
+.t-SYS{background:#666}.t-RX{background:#0277bd}.t-TX{background:#ef6c00}
+.t-DIGI{background:#2e7d32}.t-SKIP{background:#777}.t-ERR{background:#c62828}
+.log{background:var(--log-bg);color:var(--log-text);font:12.5px/1.55 ui-monospace,Consolas,monospace;
+  padding:12px;border-radius:8px;overflow-x:auto;white-space:pre}
+.l-RX{color:#4fc3f7}.l-TX{color:#ffb74d}.l-DIGI{color:#81c784}.l-SKIP{color:#888}.l-ERR{color:#ff5252;font-weight:bold}
+.timeline{font:13px/1.5 ui-monospace,Consolas,monospace;background:var(--code-bg);
+  border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre}
+.bad-t{color:var(--bad)}.ok-t{color:var(--ok)}
+button.theme{position:fixed;right:14px;top:12px;z-index:5;border:1px solid var(--line);
+  background:var(--panel);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px}
+@media (max-width:860px){
+  .layout{display:block}
+  nav{position:static;height:auto;width:auto;border-right:0;border-bottom:1px solid var(--line)}
+  main{padding:20px 16px 60px}
+}
+</style>
+</head>
+<body>
+<button class="theme" onclick="toggleTheme()" aria-label="Tema değiştir">◐ Tema</button>
+<div class="layout">
+
+<nav>
+  <h2>TROY DigiRepeater</h2>
+  <div class="ver">Yardım kılavuzu · yazılım v1.0.2</div>
+
+  <div class="grp">Başlarken</div>
+  <a href="#ozet">1. Genel bakış</a>
+  <a href="#donanim">2. Donanım ve pinler</a>
+  <a href="#kullanim">3. Cihazı kullanma</a>
+  <a href="#saha">4. Saha testi rehberi</a>
+
+  <div class="grp">Kod rehberi</div>
+  <a href="#yapi">5. Dosya yapısı</a>
+  <a href="#ayarlar">6. Ayarlar ve değişkenler</a>
+  <a href="#log">7. LOG sistemi</a>
+  <a href="#kopya">8. Kopya (duplicate) engelleme</a>
+  <a href="#led">9. LED durum makinesi</a>
+  <a href="#dogrulama">10. Doğrulama fonksiyonları</a>
+  <a href="#lora">11. LoRa başlatma</a>
+  <a href="#wifi">12. WiFi ve düğme</a>
+  <a href="#web">13. Web arayüzü ve rotalar</a>
+  <a href="#nvs">14. Kalıcı ayarlar (NVS)</a>
+  <a href="#ota">15. OTA güncelleme</a>
+  <a href="#beacon">16. Beacon paketleri</a>
+  <a href="#rx">17. RX ve digipeat akışı</a>
+  <a href="#kuyruk" class="sub">17.1 Kuyruk ve RX kaybı</a>
+  <a href="#loop">18. Ana döngü (loop)</a>
+  <a href="#seri">19. Seri komutlar</a>
+
+  <div class="grp">Referans</div>
+  <a href="#sinir">20. Bilinen sınırlamalar</a>
+  <a href="#sorun">21. Sorun giderme</a>
+  <a href="#surum">22. Sürüm geçmişi</a>
+</nav>
+
+<main>
+<h1>TROY LoRa DigiRepeater — Yardım ve Kod Kılavuzu</h1>
+<p class="lead">ESP32 + SX127x tabanlı LoRa APRS fill-in digipeater (<code>main.cpp</code>, yazılım <b>v1.0.2</b>). Bu belge cihazın nasıl kullanılacağını ve kodun her bölümünün ne yaptığını, neden öyle yazıldığını anlatır. Belge koddan bağımsızdır; koda eklenmemiştir.</p>
+
+<!-- ============================================================ -->
+<h2 id="ozet">1. Genel bakış</h2>
+<p>Cihaz 433.775 MHz'de LoRa APRS paketlerini dinler. Yolunda (<code>path</code>) <code>WIDE1-1</code> bulunan paketleri, bu hop'u <code>ÇAĞRI*</code> ile değiştirip rastgele kısa bir bekleme sonrası yeniden yayınlar. Böylece zayıf istasyonların menzili bir hop genişler.</p>
+<table>
+<tr><th>Özellik</th><th>Durum</th></tr>
+<tr><td>Digipeat</td><td>Yalnızca <code>WIDE1-1</code> (fill-in). WIDE2-x vb. işlenmez.</td></tr>
+<tr><td>iGate (internet)</td><td>Yok. Cihaz sadece RF↔RF çalışır.</td></tr>
+<tr><td>Beacon</td><td>Konum+yorum (açılışta, 30. ve 59. dk), durum (5., 25., 45. dk)</td></tr>
+<tr><td>Yapılandırma</td><td>Web arayüzü (WiFi AP), ayarlar NVS'te kalıcı</td></tr>
+<tr><td>Güncelleme</td><td>Web üzerinden OTA (<code>firmware.bin</code>)</td></tr>
+<tr><td>Çarpışma önleme</td><td>300–1200 ms rastgele bekleme, <b>bloklamayan</b> kuyruk (v1.0.2)</td></tr>
+<tr><td>Kopya engelleme</td><td>8 kayıtlık halka, 30 sn pencere</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="donanim">2. Donanım ve pinler</h2>
+<table>
+<tr><th>Tanım</th><th>GPIO</th><th>Açıklama</th></tr>
+<tr><td><code>LORA_SCK</code></td><td>5</td><td>SPI saat</td></tr>
+<tr><td><code>LORA_MISO</code></td><td>19</td><td>SPI veri girişi</td></tr>
+<tr><td><code>LORA_MOSI</code></td><td>27</td><td>SPI veri çıkışı</td></tr>
+<tr><td><code>LORA_SS</code></td><td>18</td><td>Chip select (NSS)</td></tr>
+<tr><td><code>LORA_RST</code></td><td>14</td><td>Modül reset</td></tr>
+<tr><td><code>LORA_DIO0</code></td><td>26</td><td>RxDone kesme çıkışı (kodda <b>yoklama/poll</b> ile okunur)</td></tr>
+<tr><td><code>GPIO2_PIN</code></td><td>2</td><td>Kart üstü LED</td></tr>
+<tr><td><code>WIFI_BUTTON</code></td><td>0</td><td>BOOT düğmesi, <code>INPUT_PULLUP</code>; basılınca LOW</td></tr>
+</table>
+<p>Pin düzeni TTGO LoRa32 / Heltec V1 tarzı kartlarla uyumludur. Farklı kartta yalnızca bu <code>#define</code> satırlarını değiştirmeniz yeterlidir.</p>
+
+<!-- ============================================================ -->
+<h2 id="kullanim">3. Cihazı kullanma</h2>
+<h3>3.1 WiFi'yi açma/kapama</h3>
+<ol>
+<li>BOOT düğmesini <b>3 saniye</b> basılı tutun. LED 3 kez yanıp söner (onay).</li>
+<li>Telefon/bilgisayardan <code>TROY-DigiRepeater</code> ağına bağlanın (şifre varsayılan olarak <code>12345678</code>).</li>
+<li>Tarayıcıda <code>192.168.4.1</code> adresini açın.</li>
+<li>Kapatmak için düğmeyi tekrar 3 sn basılı tutun veya seri monitörden <code>wifi off</code> yazın.</li>
+</ol>
+<div class="box"><b>Neden WiFi varsayılan olarak kapalı?</b>WiFi açıkken ESP32 daha fazla akım çeker, ısınır ve web isteklerini işlerken ana döngüyü meşgul eder. Sahada işiniz bitince kapatın; cihaz yalnızca LoRa ile çalışmaya devam eder.</div>
+
+<h3>3.2 Arayüz sekmeleri</h3>
+<table>
+<tr><th>Sekme</th><th>Ne yapar</th></tr>
+<tr><td><b>Kullanıcı</b></td><td>Çağrı işareti, enlem/boylam, yorum, durum metni. "Kaydet ve Uygula" canlı uygular, kaydeder ve hemen yeni bir konum beacon'ı gönderir.</td></tr>
+<tr><td><b>LoRa</b></td><td>Frekans, SF, BW, CR, güç, sync word. Kaydedince modül yeniden başlar (~100 ms RX kesintisi).</td></tr>
+<tr><td><b>LOG</b></td><td>Son 30 satır, renkli, 2 sn'de bir yenilenir. Saha teşhisi için ana araçtır.</td></tr>
+<tr><td><b>OTA</b></td><td>Web'den yeni <code>firmware.bin</code> yükleme.</td></tr>
+</table>
+
+<h3>3.3 LED anlamları</h3>
+<table>
+<tr><th>Durum</th><th>Anlam</th></tr>
+<tr><td>WiFi açıkken 2 sn'de bir kısa yanıp sönme</td><td>Kalp atışı: cihaz çalışıyor, LoRa hazır</td></tr>
+<tr><td>3 kez toggle (≈1,5 yanıp sönme)</td><td>Paket alındı (yalnızca WiFi açıkken)</td></tr>
+<tr><td>4 kez toggle (2 yanıp sönme)</td><td>Paket gönderildi / beacon yollandı (yalnızca WiFi açıkken)</td></tr>
+<tr><td>6 kez toggle (3 yanıp sönme)</td><td>WiFi açıldı/kapandı onayı</td></tr>
+<tr><td>Sürekli yanık</td><td>OTA yükleme sürüyor</td></tr>
+<tr><td>Her saniye 2 toggle (sürekli)</td><td><b>LoRa modülü başlatılamadı</b> (15 sn'de bir yeniden dener)</td></tr>
+</table>
+<p>WiFi kapalıyken RX/TX LED'i yanmaz (güç ve dikkat dağıtmayı azaltmak için). Bu bilinçli bir tasarımdır; durumu LOG sekmesinden veya seri monitörden izleyin.</p>
+
+<!-- ============================================================ -->
+<h2 id="saha">4. Saha testi rehberi</h2>
+<h3>4.1 Çıkmadan önce (masa başında)</h3>
+<ul>
+<li><b>Sync word:</b> Çevredeki LoRa APRS istasyonları genelde <code>0x34</code> kullanır. Cihazın varsayılanı <code>0x12</code>'dir. Uyuşmazsa birbirinizi hiç duymazsınız. LoRa sekmesinden karşı tarafla eşleştirin.</li>
+<li><b>Frekans/SF/BW/CR:</b> Ağ standardı 433.775 MHz, SF12, BW125, CR 4/5. Varsayılanlar budur.</li>
+<li><b>Çağrı işareti:</b> Varsayılan <code>TR0Y-5</code> (sıfırlı). Kendi işaretinizi ve SSID'nizi girin.</li>
+<li><b>Konum:</b> <code>4018.59N</code> / <code>02614.10E</code> varsayılan. Kendi konumunuzla değiştirin (biçim: <code>DDMM.mmN</code>, <code>DDDMM.mmE</code>).</li>
+<li><b>OTA denemesini</b> USB erişimin olduğu yerde yapın. Geri alma (rollback) yoktur.</li>
+<li><b>AP şifresini</b> yayına almadan önce değiştirmeyi planlayın (bkz. <a href="#sinir">sınırlamalar</a>).</li>
+</ul>
+<h3>4.2 Sahada</h3>
+<ol>
+<li>İlk testte gücü <b>15 dBm</b> civarında tutun, anten/VSWR'yi kontrol edin; sonra artırın. Antensiz modülü asla yayın yaptırmayın (PA zarar görür).</li>
+<li>BOOT ile WiFi'yi açıp <b>LOG</b> sekmesini izleyin. Açılışta <code>LoRa hazir: 433.775 MHz SF12 ...</code> satırını görmelisiniz.</li>
+<li>Başka bir cihazdan (<code>WIDE1-1</code> yollu) paket gönderin. Beklenen sıra aşağıdaki gibidir.</li>
+</ol>
+<div class="log"><span class="l-SYS">SYS|Yazilim surumu: 1.0.2 (Nov  3 2026 11:02:11)</span>
+<span class="l-SYS">SYS|LoRa hazir: 433.775 MHz SF12 BW125000 CR4/5 PWR15dBm Sync0x12</span>
+<span class="l-TX">TX|Comment (konum) mesaji gonderiliyor</span>
+<span class="l-RX">RX|Alindi [RSSI -92 SNR 7.5]: TA3OER-7>APLRT1,WIDE1-1:!4018.59N/02614.10E>test</span>
+<span class="l-DIGI">DIGI|Digipeat: kuyruga alindi, 742 ms sonra gonderilecek</span>
+<span class="l-DIGI">DIGI|Digipeat: paket tekrarlaniyor</span>
+<span class="l-TX">TX|Gonderildi [#1]: TA3OER-7>APLRT1,TR0Y-5*:!4018.59N/02614.10E>test</span></div>
+<h3>4.3 Sonucu yorumlama</h3>
+<table>
+<tr><th>Gördüğünüz</th><th>Anlamı</th><th>Ne yapmalı</th></tr>
+<tr><td>Hiç <span class="tag t-RX">RX</span> yok</td><td>Sync word / frekans / SF-BW uyuşmuyor, anten sorunu veya yakında yayın yok</td><td>Sync word'ü karşı tarafla eşleştirin; anteni kontrol edin</td></tr>
+<tr><td><span class="tag t-RX">RX</span> var, ardından <span class="tag t-SKIP">SKIP</span> "yolda WIDE1-1 yok"</td><td>Paket WIDE2-x vb. kullanıyor veya yolsuz</td><td>Normal: bu cihaz sadece WIDE1-1'i işler</td></tr>
+<tr><td><span class="tag t-SKIP">SKIP</span> "zaten bu istasyondan gecmis"</td><td>Paket zaten bizden geçmiş (yol içinde <code>ÇAĞRI*</code> var)</td><td>Normal: döngü engelleme</td></tr>
+<tr><td><span class="tag t-SKIP">SKIP</span> "yakin zamanda tekrarlandi (kopya)"</td><td>Aynı paket son 30 sn'de görüldü</td><td>Normal: başka digi önce yayınladı veya istasyon yineledi</td></tr>
+<tr><td><span class="tag t-SKIP">SKIP</span> "digipeat kuyrugu dolu"</td><td>Önceki paket hâlâ rastgele bekleme sırasında</td><td>Normal ama çok sık görülüyorsa trafik yoğun; bekleme aralığını kısaltmayı düşünün</td></tr>
+<tr><td><span class="tag t-SKIP">SKIP</span> "paket bicimi gecersiz"</td><td><code>KAYNAK&gt;HEDEF,YOL:veri</code> sırasına uymuyor</td><td>Bozuk paket olabilir; zayıf sinyalde (düşük SNR) sık görülür</td></tr>
+<tr><td><span class="tag t-ERR">ERR</span> "LoRa baslatilamadi!"</td><td>SPI bağlantısı/pin hatası, modül yok</td><td>Bağlantıları ve pin tanımlarını kontrol edin</td></tr>
+</table>
+<div class="box warn"><b>TX sırasında alım kördür</b>SF12'de 100 baytlık bir paket ~3–4 sn sürer. Bu süre boyunca cihaz hiçbir şey duyamaz. Bu LoRa yarı-dupleks donanımın doğal sınırıdır; v1.0.2 yalnızca <i>bekleme</i> sırasındaki kaybı giderir, <i>yayın</i> sırasındaki körlüğü gideremez.</div>
+
+<!-- ============================================================ -->
+<h2 id="yapi">5. Dosya yapısı</h2>
+<p>Tüm kod tek dosyadadır (<code>main.cpp</code>, PlatformIO/Arduino). Bölümler yukarıdan aşağıya şu sırayla gelir:</p>
+<table>
+<tr><th>#</th><th>Bölüm</th><th>İçerik</th></tr>
+<tr><td>1</td><td>Kütüphaneler ve genel ayarlar</td><td><code>FW_VERSION</code>, jitter sabitleri, çağrı işareti, konum, LoRa değişkenleri</td></tr>
+<tr><td>2</td><td>Misc Settings</td><td>Sayaçlar, <b>digipeat kuyruğu değişkenleri</b>, bayraklar (<code>wifiEnabled</code>, <code>loraOk</code>, <code>otaBusy</code>)</td></tr>
+<tr><td>3</td><td>Pin tanımları</td><td>LoRa SPI ve düğme/LED pinleri</td></tr>
+<tr><td>4</td><td>LOG halka tamponu</td><td><code>logPush()</code>, <code>printable()</code></td></tr>
+<tr><td>5</td><td>Kopya engelleme</td><td><code>fnvHash()</code>, <code>isDuplicate()</code></td></tr>
+<tr><td>6</td><td>LED durum makinesi</td><td><code>ledPulse()</code>, <code>ledService()</code></td></tr>
+<tr><td>7</td><td>Doğrulama/yardımcılar</td><td><code>htmlEscape</code>, <code>cleanText</code>, <code>validCallsign</code>, <code>validLat/Lon</code>, <code>validBW</code>, <code>validLoraParams</code></td></tr>
+<tr><td>8</td><td>LoRa başlatma</td><td><code>initLoRa()</code></td></tr>
+<tr><td>9</td><td>WiFi yönetimi</td><td><code>startWiFiAP()</code>, <code>stopWiFi()</code></td></tr>
+<tr><td>10</td><td>Web arayüzü</td><td><code>getHTML()</code> (4 sekme, gömülü CSS/JS)</td></tr>
+<tr><td>11</td><td>Rota işleyicileri</td><td><code>handleRoot/Log/SaveUser/SaveLora/Restart</code></td></tr>
+<tr><td>12</td><td>NVS</td><td><code>saveUserConfig</code>, <code>saveLoraConfig</code>, <code>loadConfig</code></td></tr>
+<tr><td>13</td><td>OTA</td><td><code>handleOtaUpload</code>, <code>handleOtaDone</code></td></tr>
+<tr><td>14</td><td>LoRa TX</td><td><code>loraTx()</code></td></tr>
+<tr><td>15</td><td>setup()</td><td>Başlangıç sırası</td></tr>
+<tr><td>16</td><td>processRx()</td><td>Alım ve digipeat kararı</td></tr>
+<tr><td>17</td><td>digiService()</td><td><b>Digipeat kuyruk servisi (v1.0.2)</b></td></tr>
+<tr><td>18</td><td>Seri komutlar</td><td><code>handleSerialCommand()</code></td></tr>
+<tr><td>19</td><td>loop()</td><td>Ana döngü</td></tr>
+<tr><td>20</td><td>Beacon'lar</td><td><code>Txcomment()</code>, <code>Txstatus()</code></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="ayarlar">6. Ayarlar ve değişkenler</h2>
+<h3>6.1 Kullanıcı ayarları</h3>
+<table>
+<tr><th>Değişken</th><th>Varsayılan</th><th>Açıklama</th></tr>
+<tr><td><code>callSign</code></td><td><code>TR0Y-5</code></td><td>İstasyon çağrı işareti + SSID. 3–9 karakter; yalnızca A–Z, 0–9, <code>-</code></td></tr>
+<tr><td><code>commentText</code></td><td><code>TROY LoRa DigiRepeater by TA3OER</code></td><td>Konum paketi yorumu (en çok 80 karakter)</td></tr>
+<tr><td><code>statusText</code></td><td><code>LoRa Digirepeater on 433.775mhz</code></td><td><code>&gt;</code> durum paketi metni (en çok 80 karakter)</td></tr>
+<tr><td><code>latitude</code></td><td><code>4018.59N</code></td><td><code>DDMM.mmN/S</code> (APRS biçimi, derece-dakika)</td></tr>
+<tr><td><code>longitude</code></td><td><code>02614.10E</code></td><td><code>DDDMM.mmE/W</code></td></tr>
+<tr><td><code>header</code></td><td><code>&lt;\xff\x01</code></td><td>LoRa APRS çerçeve başlığı: 3 bayt. Alınan her paket bununla başlamalı, gönderilen her paket bununla başlar.</td></tr>
+</table>
+<h3>6.2 LoRa parametreleri</h3>
+<table>
+<tr><th>Değişken</th><th>Varsayılan</th><th>Geçerli aralık</th><th>Not</th></tr>
+<tr><td><code>loraFreq</code></td><td>433 775 000 Hz</td><td>400–500 MHz</td><td>Web'de MHz olarak girilir, Hz olarak saklanır</td></tr>
+<tr><td><code>loraSF</code></td><td>12</td><td>7–12</td><td>Yüksek SF = uzun menzil, uzun hava süresi</td></tr>
+<tr><td><code>loraBW</code></td><td>125 000 Hz</td><td>7.8 … 500 kHz (10 değer)</td><td>Listedeki değerlerden biri olmalı</td></tr>
+<tr><td><code>loraCR</code></td><td>5 (4/5)</td><td>5–8</td><td>Kodlama oranının paydası</td></tr>
+<tr><td><code>loraPower</code></td><td>15 dBm</td><td>2–20</td><td>Çıkış gücü</td></tr>
+<tr><td><code>loraSyncWord</code></td><td>0x12</td><td>0x00–0xFF</td><td>Ağ ayırıcı; <b>iki taraf aynı olmalı</b></td></tr>
+</table>
+<h3>6.3 Durum bayrakları</h3>
+<table>
+<tr><th>Değişken</th><th>Anlam</th></tr>
+<tr><td><code>wifiEnabled</code></td><td>WiFi AP ve web sunucusu açık mı</td></tr>
+<tr><td><code>loraOk</code></td><td>LoRa modülü çalışıyor mu. <code>false</code> ise RX/TX/beacon yapılmaz, 15 sn'de bir yeniden denenir</td></tr>
+<tr><td><code>otaBusy</code></td><td>OTA sürerken <code>true</code>: zamanlı beacon'lar ve bekleyen digipeat bastırılır</td></tr>
+<tr><td><code>otaStarted</code></td><td>Bu istekte dosya gerçekten geldi mi (boş POST'u ayırt eder)</td></tr>
+<tr><td><code>otaError</code></td><td>OTA'da ilk karşılaşılan hata (sonrakiler yok sayılır)</td></tr>
+<tr><td><code>DigiCount</code></td><td>Digipeat sayısı; saatte bir (45. dk durumundan sonra) sıfırlanır</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="log">7. LOG sistemi</h2>
+<p>Son <b>30</b> satırı tutan bir <i>halka tampon</i> (ring buffer) vardır: <code>logBuffer[30][200]</code>. Yeni satır eskisinin üstüne yazılır; bellek sabittir, taşma olmaz.</p>
+<ul>
+<li><code>logPush(msg, tag)</code>: satırı <code>ETİKET|mesaj</code> biçiminde tampona yazar, ayrıca <b>yalnızca mesajı</b> seri porta basar.</li>
+<li><code>logHead</code> bir sonraki yazılacak yeri, <code>logCount</code> dolu satır sayısını (en çok 30), <code>logTotal</code> açılıştan beri toplam satırı tutar.</li>
+<li>Etiketler: <span class="tag t-SYS">SYS</span> sistem, <span class="tag t-RX">RX</span> alınan paket, <span class="tag t-TX">TX</span> gönderilen paket, <span class="tag t-DIGI">DIGI</span> digipeat kararı, <span class="tag t-SKIP">SKIP</span> atlanan paket ve nedeni, <span class="tag t-ERR">ERR</span> hata.</li>
+<li><code>printable()</code>: RF'ten gelen metindeki yazdırılamayan baytları <code>.</code> yapar. Böylece bozuk bir paket logu ve web arayüzünü bozamaz.</li>
+</ul>
+<p>Web'de <code>/log</code> düz metin döner; JavaScript her satırdaki ilk <code>|</code> işaretinden etiketi ayırıp renklendirir. Metin <code>textContent</code> ile yazılır, yani RF'ten gelen içerik HTML olarak yorumlanmaz (XSS koruması).</p>
+
+<!-- ============================================================ -->
+<h2 id="kopya">8. Kopya (duplicate) engelleme</h2>
+<p><b>Amaç:</b> Aynı paketi kısa sürede iki kez yayınlamamak ve digipeater'lar arası ping-pong'u önlemek.</p>
+<ul>
+<li><code>fnvHash()</code>: paketin 32 bitlik FNV-1a özetini çıkarır (hızlı, ESP32'de ucuz).</li>
+<li><code>isDuplicate()</code>: <b>8 kayıtlık</b> halka tamponda aynı özet <b>30 saniye</b> içinde varsa <code>true</code> döner. Yoksa özeti halkaya yazar ve <code>false</code> döner.</li>
+<li>Özeti alınan metin, <code>&lt;\xff\x01</code> başlığı çıkarılmış tüm APRS satırıdır (kaynak, hedef, yol ve veri).</li>
+</ul>
+<div class="box warn"><b>Yan etkili fonksiyon</b><code>isDuplicate()</code> yalnızca sorgulamaz, <b>kaydeder</b>. Bu yüzden v1.0.2'de yalnızca paket gerçekten digipeat adayıysa <i>ve</i> kuyruk boşsa çağrılır. Aksi halde kuyruk doluyken bırakılan bir paketin imzası yazılır; komşudan aynı paket tekrar duyulunca "kopya" sanılıp hiç yayınlanmazdı.</div>
+
+<!-- ============================================================ -->
+<h2 id="led">9. LED durum makinesi</h2>
+<p>LED, <code>delay()</code> kullanılmadan, <b>bloklamayan</b> bir durum makinesiyle sürülür:</p>
+<ul>
+<li><code>ledPulse(n)</code>: <i>n</i> kez <b>toggle</b> (aç/kapa geçişi) ister; aralık <b>80 ms</b>. <code>n=2</code> bir yanıp sönme demektir.</li>
+<li><code>ledService()</code>: her <code>loop()</code> turunda çağrılır; süre geldiyse LED'i çevirir ve sayacı düşürür. Sayaç bitince LED'in kapalı kaldığından emin olur.</li>
+</ul>
+<p>Böylece LED animasyonu RX, web ve düğme işlerini hiç bekletmez.</p>
+
+<!-- ============================================================ -->
+<h2 id="dogrulama">10. Doğrulama fonksiyonları</h2>
+<p>Web'den veya NVS'ten gelen her değer kullanılmadan önce doğrulanır (sunucu tarafı doğrulama; tarayıcıdaki <code>maxlength</code> güvenlik sayılmaz).</p>
+<table>
+<tr><th>Fonksiyon</th><th>Ne yapar</th></tr>
+<tr><td><code>htmlEscape()</code></td><td>Kullanıcı metnini HTML'e koymadan önce <code>&amp; &lt; &gt; " '</code> karakterlerini kaçırır</td></tr>
+<tr><td><code>cleanText()</code></td><td>Kontrol karakterlerini, <code>|</code> ve <code>~</code> karakterlerini siler (APRS'te yasak), baştaki/sondaki boşluğu keser, uzunluğu UTF-8 karakterini <b>bölmeden</b> kısaltır</td></tr>
+<tr><td><code>validCallsign()</code></td><td>3–9 karakter, yalnızca <code>A-Z 0-9 -</code></td></tr>
+<tr><td><code>validLat()</code></td><td>Tam 8 karakter, <code>DDMM.mmN/S</code>; derece ≤ 90, dakika &lt; 60</td></tr>
+<tr><td><code>validLon()</code></td><td>Tam 9 karakter, <code>DDDMM.mmE/W</code>; derece ≤ 180, dakika &lt; 60</td></tr>
+<tr><td><code>validBW()</code></td><td>Yalnızca SX127x'in desteklediği 10 bant genişliği değeri</td></tr>
+<tr><td><code>validLoraParams()</code></td><td>Frekans, SF, BW, CR, güç aralıklarını birlikte denetler (NVS yüklemede kullanılır)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="lora">11. LoRa başlatma — <code>initLoRa()</code></h2>
+<ol>
+<li><b>Bekleyen digipeat paketini siler.</b> Paket eski ayarlara göre hazırlanmıştı; yeni frekans/SF ile yayınlamak anlamsızdır.</li>
+<li>Daha önce başlatıldıysa <code>LoRa.end()</code> ile kapatır (SPI'yi de bırakır), 50 ms bekler.</li>
+<li>SPI'yi ve pinleri ayarlar, <code>LoRa.begin(frekans)</code> çağırır. Başarısızsa <code>false</code> döner ve (sessiz değilse) <span class="tag t-ERR">ERR</span> loglar.</li>
+<li>SF, BW, CR, güç, <b>CRC</b> ve sync word'ü uygular.</li>
+<li><code>LoRa.receive()</code> ile <b>sürekli alım</b> moduna girer (paket gelince DIO0 yükselir).</li>
+</ol>
+<p><code>quiet</code> parametresi, yeniden deneme döngüsünde log dolmasını önler. Web'den ayar değişince başarısız olursa <b>eski ayarlar geri yüklenir</b> (<code>handleSaveLora</code>), böylece yanlış bir değer cihazı sağır bırakmaz.</p>
+
+<!-- ============================================================ -->
+<h2 id="wifi">12. WiFi ve düğme</h2>
+<ul>
+<li><code>startWiFiAP()</code>: <code>WIFI_AP</code> modunda <code>TROY-DigiRepeater</code> ağını açar, IP'yi loglar (varsayılan 192.168.4.1), web sunucusunu başlatır.</li>
+<li><code>stopWiFi()</code>: sunucuyu durdurur, WiFi'yi tamamen kapatır (<code>WIFI_OFF</code>).</li>
+<li><b>Düğme:</b> <code>loop()</code> içinde BOOT (GPIO0) <code>LOW</code> olunca zaman tutulur. <code>WIFI_HOLD_MS</code> (3000 ms) dolunca WiFi açılır/kapanır. <code>holdDone</code> bayrağı, düğme bırakılana kadar yeniden tetiklemeyi engeller. Tüm bu işlem bloklamaz.</li>
+</ul>
+<div class="box bad"><b>Güvenlik notu</b>AP şifresi koda sabit yazılıdır (<code>12345678</code>) ve OTA/ayar sayfalarında ek kimlik doğrulama yoktur. Şifreyi bilen herkes ayar değiştirebilir veya firmware yükleyebilir. Sahada WiFi'yi yalnızca gerektiğinde açmanız bu riski azaltır.</div>
+
+<!-- ============================================================ -->
+<h2 id="web">13. Web arayüzü ve rotalar</h2>
+<h3>13.1 Rotalar</h3>
+<table>
+<tr><th>Rota</th><th>Yöntem</th><th>İşleyici</th><th>Görev</th></tr>
+<tr><td><code>/</code></td><td>GET</td><td><code>handleRoot</code></td><td>Ana sayfa (4 sekme)</td></tr>
+<tr><td><code>/save_user</code></td><td>POST</td><td><code>handleSaveUser</code></td><td>Kullanıcı ayarlarını doğrula, uygula, NVS'e yaz, beacon gönder</td></tr>
+<tr><td><code>/save_lora</code></td><td>POST</td><td><code>handleSaveLora</code></td><td>LoRa ayarlarını doğrula, modülü yeniden başlat, NVS'e yaz</td></tr>
+<tr><td><code>/log</code></td><td>GET</td><td><code>handleLog</code></td><td>Düz metin log (eskiden yeniye)</td></tr>
+<tr><td><code>/restart</code></td><td>GET</td><td><code>handleRestart</code></td><td>Cihazı yeniden başlat</td></tr>
+<tr><td><code>/update</code></td><td>POST</td><td><code>handleOtaDone</code> + <code>handleOtaUpload</code></td><td>OTA firmware yükleme</td></tr>
+</table>
+<h3>13.2 Ayar kaydetme mantığı (<code>handleSaveUser</code>)</h3>
+<ol>
+<li>Her alan <code>cleanText()</code>'ten geçer, çağrı işareti/koordinat büyük harfe çevrilir.</li>
+<li>Geçersiz alan varsa <b>hiçbir şey uygulanmaz</b>; hata listesiyle 400 sayfası döner. Yani yarım kayıt olmaz.</li>
+<li>Geçerliyse değişkenler güncellenir, NVS'e yazılır. NVS yazılamazsa kullanıcıya "yeniden başlatınca kaybolur" uyarısı verilir.</li>
+<li>Yanıt gönderildikten sonra <code>Txcomment()</code> ile yeni konum beacon'ı yollanır.</li>
+</ol>
+<h3>13.3 LoRa ayarı (<code>handleSaveLora</code>)</h3>
+<ol>
+<li>Tüm değerler doğrulanır (virgüllü frekans da kabul edilir: <code>433,775</code> → <code>433.775</code>).</li>
+<li>Hiçbir değer değişmediyse "Değişiklik yok" döner, modül yeniden başlatılmaz.</li>
+<li>Eski değerler saklanır, yeniler denenir. Başarısızsa <b>eskiler geri yüklenip modül yeniden başlatılır</b>.</li>
+<li>Başarılıysa NVS'e yazılır.</li>
+</ol>
+<h3>13.4 Sonuç sayfası</h3>
+<p><code>sendResultPage()</code> başarı/hata bildirir ve <code>meta refresh</code> ile birkaç saniye sonra ana sayfaya döner. <code>detail</code> alanı HTML olarak basıldığı için çağıran tarafın güvenli (kaçırılmış) metin vermesi gerekir; kodda öyle yapılır.</p>
+
+<!-- ============================================================ -->
+<h2 id="nvs">14. Kalıcı ayarlar (NVS)</h2>
+<p>ESP32'nin <code>Preferences</code> kütüphanesi, flash'ta <code>digi</code> ad alanını kullanır. Güç gitse de ayarlar korunur; OTA güncellemesi de bunları silmez.</p>
+<table>
+<tr><th>Anahtar</th><th>Tür</th><th>Değişken</th></tr>
+<tr><td><code>call</code></td><td>String</td><td>callSign</td></tr>
+<tr><td><code>comment</code></td><td>String</td><td>commentText</td></tr>
+<tr><td><code>status</code></td><td>String</td><td>statusText</td></tr>
+<tr><td><code>lat</code> / <code>lon</code></td><td>String</td><td>latitude / longitude</td></tr>
+<tr><td><code>freq</code></td><td>ULong</td><td>loraFreq (Hz)</td></tr>
+<tr><td><code>sf</code>, <code>cr</code>, <code>pwr</code>, <code>sync</code></td><td>UChar</td><td>loraSF, loraCR, loraPower, loraSyncWord</td></tr>
+<tr><td><code>bw</code></td><td>ULong</td><td>loraBW</td></tr>
+</table>
+<p><code>loadConfig()</code> açılışta çalışır. Kayıtlı değerleri <b>yeniden doğrular</b>; bozuk/geçersiz ise varsayılanlara döner ve <span class="tag t-ERR">ERR</span> loglar. Hiç kayıt yoksa (ilk açılış) koddaki varsayılanlar kullanılır.</p>
+<div class="box"><b>Varsayılanları değiştirmek</b>Koddaki varsayılanlar yalnızca NVS boşken geçerlidir. Cihazda bir kez kayıt yapıldıysa, kodda varsayılanı değiştirip yüklemek <b>etkisiz kalır</b>; web arayüzünden değiştirmeniz gerekir.</div>
+
+<!-- ============================================================ -->
+<h2 id="ota">15. OTA güncelleme</h2>
+<p>Web'den <code>firmware.bin</code> yüklenir. Akış, <code>handleOtaUpload</code> (parçalar gelirken) ve <code>handleOtaDone</code> (bitince) olarak ikiye ayrılır.</p>
+<h3>15.1 Yükleme sırasında (<code>handleOtaUpload</code>)</h3>
+<table>
+<tr><th>Aşama</th><th>Yapılan</th></tr>
+<tr><td>START</td><td>Bayrakları kur, LED'i sürekli yak, dosya adını logla, <code>.bin</code> uzantısını ve <code>Update.begin()</code>'i dene</td></tr>
+<tr><td>WRITE (ilk parça)</td><td>ESP32 imaj başlığı: ilk bayt <code>0xE9</code>, 12. ve 13. bayt <code>0x00</code> olmalı</td></tr>
+<tr><td>WRITE</td><td>Boyut boş OTA bölümünü aşıyor mu kontrol et, <code>Update.write()</code> ile yaz, eksik yazılırsa hata</td></tr>
+<tr><td>END</td><td>En az 100 KB olmalı, <code>Update.end(true)</code> imaj bütünlüğünü doğrular</td></tr>
+<tr><td>ABORTED</td><td>Yarım kalan yüklemeyi iptal et</td></tr>
+</table>
+<p>İlk hata <code>otaError</code>'a yazılır ve sonrasındaki parçalar sessizce yutulur; böylece tek bir net hata mesajı görürsünüz.</p>
+<h3>15.2 Bitiş (<code>handleOtaDone</code>)</h3>
+<ul>
+<li>Başarılıysa sonuç sayfası gösterilip cihaz yeniden başlar. WiFi kapalı açılır; BOOT ile tekrar açın.</li>
+<li>Başarısızsa nedeni loglar ve gösterir; cihaz <b>eski firmware ile çalışmaya devam eder</b>.</li>
+<li><code>previousMillis</code> sıfırlanır; yükleme süresince birikmiş dakikalar yüzünden art arda beacon patlaması olmaz.</li>
+</ul>
+<div class="box warn"><b>Dikkat</b>Yalnızca <code>.pio/build/&lt;env&gt;/firmware.bin</code> yükleyin. <code>bootloader.bin</code> veya birleştirilmiş imaj başlık kontrolünden geçebilir ve cihazı açılmaz hale getirebilir. Geri alma (rollback) mekanizması yoktur. Yükleme sürerken gücü kesmeyin. OTA sırasında cihaz alım ve digipeat yapmaz.</div>
+
+<!-- ============================================================ -->
+<h2 id="beacon">16. Beacon paketleri</h2>
+<h3>16.1 Konum + yorum — <code>Txcomment()</code></h3>
+<pre><code>&lt;\xff\x01TR0Y-5&gt;APLERT:!4018.59NL02614.10E# TROY LoRa DigiRepeater by TA3OER</code></pre>
+<ul>
+<li><code>APLERT</code>: hedef (tocall) alanı. Yazılım kimliğidir.</li>
+<li><code>!</code>: konum paketi (zaman damgasız).</li>
+<li><code>4018.59N</code> + <code>L</code> + <code>02614.10E</code> + <code>#</code>: enlem, <b>sembol tablosu/overlay</b> (<code>L</code>), boylam, <b>sembol kodu</b> (<code>#</code> = digipeater). Yani harita sembolü, <code>L</code> işaretli digi'dir.</li>
+</ul>
+<h3>16.2 Durum — <code>Txstatus()</code></h3>
+<pre><code>&lt;\xff\x01TR0Y-5&gt;APLERT:&gt;LoRa Digirepeater on 433.775mhz DigiCount:7</code></pre>
+<p>Son kısım, o saat içindeki digipeat sayısıdır.</p>
+<h3>16.3 Zamanlama</h3>
+<table>
+<tr><th>Ne zaman</th><th>Ne gönderilir</th></tr>
+<tr><td>Açılışta (LoRa hazırsa)</td><td>Konum + yorum</td></tr>
+<tr><td>Web'den kullanıcı ayarı kaydedilince</td><td>Konum + yorum</td></tr>
+<tr><td>Açılıştan sonra her saat 30. ve 59. dakikada</td><td>Konum + yorum</td></tr>
+<tr><td>5. ve 25. dakikada</td><td>Durum</td></tr>
+<tr><td>45. dakikada</td><td>Durum, ardından <code>DigiCount = 0</code></td></tr>
+</table>
+<div class="box"><b>"Dakika" neyi sayar?</b><code>currentMinute</code> gerçek saat değil, <b>açılıştan itibaren geçen dakikalardır</b> (mod 60). Cihazın saati yoktur. Beacon zamanlaması her cihazda açılış anına göre kayar; bu, farklı cihazların aynı anda beacon atıp çarpışmasını da azaltır. Sayaç <code>previousMillis += 60000</code> ile ilerler (<code>=</code> değil), böylece zamanlama kayması birikmez.</div>
+<p><code>otaBusy</code> veya <code>loraOk == false</code> iken beacon atılmaz; LoRa kapalıysa <span class="tag t-ERR">ERR</span> loglanır.</p>
+<p><b>Not:</b> <code>loraTx()</code> bloklayıcıdır (<code>endPacket()</code> yayın bitene kadar bekler); TX sırasında alım yoktur.</p>
+
+<!-- ============================================================ -->
+<h2 id="rx">17. RX ve digipeat akışı — <code>processRx()</code></h2>
+<p>Bu, cihazın kalbidir. DIO0 yükselince <code>loop()</code> bu fonksiyonu çağırır.</p>
+<h3>17.1 Adım adım</h3>
+<ol>
+<li><b>Paketi oku.</b> <code>LoRa.read()</code> ile baytları <code>String</code>'e topla. WiFi açıksa LED 3 toggle.</li>
+<li><b>Başlık kontrolü.</b> İlk 3 bayt <code>&lt;\xff\x01</code> değilse paket LoRa APRS değildir → <span class="tag t-SKIP">SKIP</span> "APRS paketi degil".</li>
+<li><b>RX logu.</b> RSSI, SNR ve yazdırılabilir metin <span class="tag t-RX">RX</span> olarak loglanır.</li>
+<li><b>NOGATE / TCPIP filtresi.</b> Paketin <i>herhangi bir yerinde</i> bu kelimeler geçiyorsa digipeat edilmez (internetten gelmiş veya gate edilmesi istenmemiş paket).</li>
+<li><b>Ayrıştırma.</b> <code>KAYNAK&gt;HEDEF,YOL:veri</code> biçiminde <code>&gt;</code>, ilk <code>,</code> ve ilk <code>:</code> konumları bulunur. <code>fmtOk</code> yalnızca <code>&gt;</code> varsa ve <code>:</code> ondan <b>sonra</b> geliyorsa true olur.</li>
+<li><b>WIDE1-1 arama.</b> Yalnızca <b>yol</b> kısmında aranır (hedef alanında geçen bozuk paketler yanıltmasın diye). Bulunamazsa <code>wIdx = -1</code> ve paket atlanır.</li>
+<li><b>Ek kontroller:</b> yolda <code>ÇAĞRI*</code> yok (zaten bizden geçmemiş), kaynak biz değiliz, kuyruk boş, kopya değil.</li>
+<li><b>Yolu yeniden yaz.</b> <code>WIDE1-1</code> yerine <code>ÇAĞRI*</code> konur; diğer yol parçaları aynen kalır.</li>
+<li><b>Kuyruğa al.</b> Paket gönderilmez; <code>pendingDigiPacket</code>'e konur ve rastgele bir süre atanır (<a href="#kuyruk">bkz. 17.2</a>).</li>
+</ol>
+<h3>17.2 Örnek dönüşüm</h3>
+<pre><code>Gelen : TA3OER-7&gt;APLRT1,WIDE1-1:!4018.59N/02614.10E&gt;test
+Giden : TA3OER-7&gt;APLRT1,TR0Y-5*:!4018.59N/02614.10E&gt;test
+
+Gelen : TA3OER-7&gt;APLRT1,KOMSU*,WIDE1-1:!...   (başka digi'den geçmiş)
+Giden : TA3OER-7&gt;APLRT1,KOMSU*,TR0Y-5*:!...    (yalnızca WIDE1-1 değişir)
+
+Gelen : TA3OER-7&gt;APLRT1,WIDE2-2:!...            → SKIP (yolda WIDE1-1 yok)
+Gelen : TA3OER-7&gt;APLRT1,TR0Y-5*,WIDE1-1:!...    → SKIP (zaten bu istasyondan gecmis)</code></pre>
+<h3>17.3 Atlama nedenleri (SKIP mesajları)</h3>
+<table>
+<tr><th>Mesaj</th><th>Koşul</th></tr>
+<tr><td>kendi paketimiz</td><td>Kaynak çağrı işareti bizimki</td></tr>
+<tr><td>paket bicimi gecersiz</td><td><code>&gt;</code> / <code>:</code> yok veya sırası yanlış</td></tr>
+<tr><td>yolda WIDE1-1 yok</td><td>Yol kısmında <code>WIDE1-1</code> bulunamadı</td></tr>
+<tr><td>zaten bu istasyondan gecmis</td><td>Yolda <code>ÇAĞRI*</code> var</td></tr>
+<tr><td>digipeat kuyrugu dolu</td><td>Önceki paket hâlâ bekleme süresinde</td></tr>
+<tr><td>yakin zamanda tekrarlandi (kopya)</td><td>Aynı paket son 30 sn'de görüldü</td></tr>
+<tr><td>Yok sayildi: APRS paketi degil / pakette TCPIP var / pakette NOGATE var</td><td>Başlık veya filtre kuralı</td></tr>
+</table>
+
+<h3 id="kuyruk">17.4 Kuyruk ve RX kaybı (v1.0.1 → v1.0.2 değişikliği)</h3>
+<p>Digipeat öncesi rastgele bekleme çarpışmayı önler; ama <b>nasıl</b> beklendiği alım kaybını belirler.</p>
+<div class="box bad"><b>v1.0.1 (hatalı): bloklayan bekleme</b>Paket işlenirken <code>delay()</code> döngüsüyle 300–1200 ms beklenirdi. Bu sürede <code>loop()</code> dönmez, <code>parsePacket()</code> çağrılmazdı. SX127x'in <b>tek bir FIFO'su</b> vardır; okunmamış paketin üstüne yenisi yazılır ve paket <b>kaybolur</b>.</div>
+<div class="timeline"><span class="bad-t">v1.0.1 (bloklayan)</span>
+zaman ─────────────────────────────────────────────────────────────▶
+paket A geldi ─┐
+               ├── [ delay(742 ms): loop() DURUR ]── A'yi gönder
+paket B geldi ─┘      ↑ B burada gelirse FIFO'da kalır; C gelirse B ezilir
+                      RX kaybı!</div>
+<div class="box ok"><b>v1.0.2 (düzeltilmiş): bloklamayan kuyruk</b>Paket <code>pendingDigiPacket</code>'e konur ve hemen dönülür. <code>loop()</code> çalışmaya devam eder; alım, web, düğme ve LED aksamaz. Süre dolunca <code>digiService()</code> paketi yollar.</div>
+<div class="timeline"><span class="ok-t">v1.0.2 (kuyruklu)</span>
+zaman ─────────────────────────────────────────────────────────────▶
+paket A geldi → kuyruğa al (anında döner)
+paket B geldi → okunur, loglanır (kuyruk dolu: B digipeat edilmez, imzası yazılmaz)
+loop() sürekli dönüyor … 742 ms doldu → digiService(): A'yı gönder</div>
+<h3>Kuyruk kuralları</h3>
+<ul>
+<li><b>Tek slot:</b> LoRa hava süresi uzundur; ardışık paketleri biriktirip patlama halinde yollamak kanalı kapatır ve çarpışmayı artırır.</li>
+<li><b>Kuyruk doluyken gelen aday bırakılır</b> ama <b>RX'i yine alınır ve loglanır.</b> Yalnızca o paket için digipeat atlanır; imzası kopya önbelleğine yazılmadığı için komşudan yeniden duyulursa tekrar denenebilir.</li>
+<li><b>Gönderimden önce slot boşaltılır</b>; uzun süren TX sırasında aynı paketin tekrar gönderilmesi imkânsızdır.</li>
+<li><b>Atılma durumları:</b> OTA sürerken, LoRa kapalıyken veya LoRa ayarı değişince bekleyen paket silinir.</li>
+<li><b>Süre hesabı</b> <code>millis() - pendingDigiTime &lt; pendingDigiDelay</code> biçimindedir (unsigned çıkarma); <code>millis()</code> 49 günde taşsa bile doğru çalışır.</li>
+<li><b>Sıra:</b> <code>loop()</code>'ta önce RX kontrol edilir, <i>sonra</i> <code>digiService()</code> çalışır; böylece bekleyen bir alım, TX'in (kör süre) arkasında kalmaz.</li>
+</ul>
+<div class="box warn"><b>Hâlâ kalan kayıp</b><code>loraTx()</code> bloklayıcıdır: yayın sürerken (SF12'de ~2–4 sn) cihaz alım yapamaz. Bu, tek-yönlü (yarı dupleks) bir LoRa radyonun fiziksel sınırıdır; yazılımla giderilemez. Sahada "bazı paketler digipeat olmadı" görürseniz önce bu körlüğü düşünün.</div>
+
+<!-- ============================================================ -->
+<h2 id="loop">18. Ana döngü — <code>loop()</code></h2>
+<p>Hiçbir adım uzun süre bloklamaz. Sıra şöyledir:</p>
+<ol>
+<li><code>ledService()</code> — LED animasyonu</li>
+<li><b>BOOT düğmesi</b> — 3 sn basılı tutma → WiFi aç/kapa</li>
+<li><code>server.handleClient()</code> — WiFi açıksa web isteklerini işle</li>
+<li><b>Seri komut okuyucu</b> — satır sonuna kadar biriktirir (en çok 32 karakter)</li>
+<li><b>LED kalp atışı</b> — WiFi açık ve LoRa hazırsa 2 sn'de bir</li>
+<li><b>Dakika zamanlayıcı</b> — beacon'ları ve <code>DigiCount</code> sıfırlamayı tetikler</li>
+<li><b>LoRa kapalıysa</b> — LED ile haber ver, 15 sn'de bir <code>initLoRa(true)</code> dene, <b>başka işe geçmeden dön</b> (RX yok)</li>
+<li><b>LoRa RX</b> — DIO0 HIGH ise <code>parsePacket()</code> → <code>processRx()</code>; sonra <code>LoRa.receive()</code></li>
+<li><code>digiService()</code> — kuyrukta süresi dolmuş paket varsa gönder</li>
+</ol>
+<p><code>parsePacket()</code> modülü bekleme moduna aldığı için her okumadan sonra <code>LoRa.receive()</code> çağrılır; aksi halde cihaz bir sonraki paketi duymazdı.</p>
+
+<!-- ============================================================ -->
+<h2 id="seri">19. Seri komutlar</h2>
+<p>115200 baud, satır sonu: <b>Newline</b>. Komutlar küçük/büyük harfe duyarsızdır.</p>
+<table>
+<tr><th>Komut</th><th>Etkisi</th></tr>
+<tr><td><code>wifi on</code> / <code>wifi ac</code></td><td>WiFi AP'yi aç</td></tr>
+<tr><td><code>wifi off</code> / <code>wifi kapat</code></td><td>WiFi'yi kapat</td></tr>
+<tr><td><code>wifi</code></td><td>WiFi durumunu yaz</td></tr>
+<tr><td><code>help</code> / <code>?</code></td><td>Komut listesi</td></tr>
+</table>
+<p>Düğmeye erişemediğiniz durumlarda (kapalı kutu) bu komutlar WiFi'yi açıp kapatmanın yoludur. Tanınmayan komut <span class="tag t-ERR">ERR</span> olarak loglanır.</p>
+
+<!-- ============================================================ -->
+<h2 id="sinir">20. Bilinen sınırlamalar</h2>
+<table>
+<tr><th>Konu</th><th>Açıklama</th><th>Öneri</th></tr>
+<tr><td>TX sırasında alım kör</td><td>Yarı dupleks radyonun doğal sınırı</td><td>—</td></tr>
+<tr><td>Sabit AP şifresi</td><td><code>12345678</code> kodda gömülü</td><td>Şifreyi NVS'e taşıyın</td></tr>
+<tr><td>OTA ve ayar sayfalarında kimlik doğrulama yok</td><td>AP'ye bağlanan herkes erişir</td><td>Basic Auth / token ekleyin</td></tr>
+<tr><td><code>/restart</code> GET ile çalışır</td><td>Bir bağlantıya tıklamak yeniden başlatır; yetkisiz</td><td>POST + doğrulamaya çevirin</td></tr>
+<tr><td>OTA'da geri alma yok</td><td>Bozuk ama geçerli imaj cihazı açılmaz yapabilir</td><td>İkili OTA bölümleri + doğrulama (rollback) kullanın</td></tr>
+<tr><td><code>FIRMWARE.BIN</code> büyük harf</td><td>Tarayıcıda küçük harfe çevrilip kabul edilir, cihaz tarafı <code>endsWith(".bin")</code> büyük/küçük harfe duyarlı olduğu için reddeder</td><td>Dosyayı küçük harfli adla yükleyin</td></tr>
+<tr><td>OTA sonrası 30 sn otomatik yenileme</td><td>WiFi kapalı açıldığı için boş sayfaya gider</td><td>Sadece görsel; BOOT ile WiFi'yi yeniden açın</td></tr>
+<tr><td>NOGATE/TCPIP araması tüm pakette</td><td>Yorum metninde bu kelimeler geçse bile paket atlanır</td><td>Pratikte zararsız; bilmekte fayda var</td></tr>
+<tr><td>Tek slotlu kuyruk</td><td>Yoğun trafikte bazı paketler digipeat edilmez</td><td>Gerekirse kuyruk derinliğini artırın</td></tr>
+<tr><td>Saat/RTC yok</td><td>Beacon dakikaları açılışa göre sayılır</td><td>—</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="sorun">21. Sorun giderme</h2>
+<table>
+<tr><th>Belirti</th><th>Olası neden</th><th>Çözüm</th></tr>
+<tr><td>Hiç paket gelmiyor</td><td>Sync word, frekans, SF/BW uyuşmazlığı; anten yok</td><td>LoRa sekmesini karşı istasyonla eşleştirin; anteni kontrol edin</td></tr>
+<tr><td>LED her saniye hızlı yanıp sönüyor</td><td>LoRa başlatılamadı</td><td>SPI kablolarını/pinleri kontrol edin; modüle güç gidiyor mu bakın</td></tr>
+<tr><td>Web arayüzü açılmıyor</td><td>WiFi kapalı</td><td>BOOT'u 3 sn basılı tutun veya seri <code>wifi on</code></td></tr>
+<tr><td>Ayar kaydedilmiyor, "geçersiz" hatası</td><td>Biçim yanlış</td><td>Çağrı işareti 3–9 karakter; enlem <code>DDMM.mmN</code>; boylam <code>DDDMM.mmE</code></td></tr>
+<tr><td>Ayarlar yeniden başlatınca kayboluyor</td><td>NVS yazılamadı (uyarı gösterilir)</td><td>Flash/NVS bölümünü kontrol edin; <code>Erase flash</code> deneyin</td></tr>
+<tr><td>Kodda varsayılanı değiştirdim ama etkisiz</td><td>NVS'te eski kayıt var</td><td>Web'den değiştirin</td></tr>
+<tr><td>OTA "başlık hatalı"</td><td>Yanlış dosya (bootloader/partitions)</td><td><code>firmware.bin</code> yükleyin</td></tr>
+<tr><td>OTA "Guncelleme baslatilamadi"</td><td>OTA bölümü yok (bölüm tablosu)</td><td>İki <code>app</code> bölümü olan bir bölüm tablosu kullanın</td></tr>
+<tr><td>Bazı paketler loglanmıyor</td><td>Bizim TX'imiz sırasında geldi (kör süre)</td><td>Normal; yoğunluğu azaltın veya SF/BW'yi düşürüp hava süresini kısaltın</td></tr>
+<tr><td>Hiç digipeat yok ama RX var</td><td>Paketler WIDE1-1 kullanmıyor veya hep kopya</td><td>SKIP nedenlerine bakın</td></tr>
+<tr><td>Aynı paket iki kez yayınlanıyor</td><td>30 sn'den uzun aralıkla yineleme veya 8 kayıt dolu</td><td>Normal; istasyon yeniden gönderdi</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="surum">22. Sürüm geçmişi</h2>
+<table>
+<tr><th>Sürüm</th><th>Değişiklik</th></tr>
+<tr><td><b>1.0.2</b></td><td>Digipeat beklemesi <b>bloklamayan kuyruğa</b> alındı (<code>pendingDigiPacket</code>, <code>digiService()</code>). Bekleme sırasındaki RX kaybı giderildi. Kopya kaydı yalnızca gerçek adayda ve kuyruk boşken yapılır. LoRa yeniden başlatılınca ve OTA sırasında bekleyen paket silinir. Sürüm numarası ve ayrıntılı kod yorumları güncellendi.</td></tr>
+<tr><td><b>1.0.1</b></td><td>Digipeat öncesi 300–1200 ms rastgele bekleme (<code>delay()</code> ile; sonradan RX kaybına yol açtığı görüldü). Yol ayrıştırma sağlamlaştırıldı: <code>WIDE1-1</code> yalnızca yol kısmında aranır, <code>substring(0,-1)</code> riski giderildi.</td></tr>
+<tr><td><b>1.0.0</b></td><td>İlk sürüm: ESP32 + LoRa, web arayüzü, OTA, NVS, LOG halka tamponu, kopya engelleme.</td></tr>
+</table>
+<p style="color:var(--muted);margin-top:30px">73! — TA3OER</p>
+</main>
+</div>
+
+<script>
+function toggleTheme(){
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==='dark'
+             : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme = dark ? 'light' : 'dark';
+  try{ localStorage.setItem('help-theme', r.dataset.theme); }catch(e){}
+}
+try{ const t=localStorage.getItem('help-theme'); if(t) document.documentElement.dataset.theme=t; }catch(e){}
+</script>
+</body>
+</html>
